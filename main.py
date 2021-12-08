@@ -1,19 +1,9 @@
 import argparse
 import os
 
-import torchvision.transforms as transforms
-
-from torch.utils.data import DataLoader
-from torchvision import datasets
-import torch
-
-from models.discriminator import Discriminator
-from models.generator import Generator
 from train.params import Params
+from train.params_builder import build_params
 from train.train import train
-from utils import get_is_cuda
-
-os.makedirs("images", exist_ok=True)
 
 import ssl
 
@@ -35,44 +25,6 @@ parser.add_argument("--sample_interval", type=int, default=400, help="interval b
 args = parser.parse_args()
 print(args)
 
-img_shape = (args.channels, args.img_size, args.img_size)
-
-
-# Loss weight for gradient penalty
-lambda_gp = 10
-
-# Initialize generator and discriminator
-generator = Generator(args.latent_dim, img_shape)
-discriminator = Discriminator(img_shape)
-
-if get_is_cuda():
-    generator.cuda()
-    discriminator.cuda()
-
-# Configure data loader
-transforms = transforms.Compose([transforms.Resize(args.img_size),
-                                 transforms.ToTensor(),
-                                 transforms.Normalize([0.5], [0.5])])
-
-dataset = datasets.CIFAR10("data/cifar10", train=True, download=True, transform=transforms)
-
-os.makedirs("../../data/cifar10", exist_ok=True)
-dataloader = torch.utils.data.DataLoader(dataset, batch_size=args.batch_size, shuffle=True)
-
-# Optimizers
-optimizer_G = torch.optim.Adam(generator.parameters(), lr=args.lr, betas=(args.b1, args.b2))
-optimizer_D = torch.optim.Adam(discriminator.parameters(), lr=args.lr, betas=(args.b1, args.b2))
-
-params: Params = Params()
-params.epochs = args.n_epochs
-params.dataloader = dataloader
-params.generator = generator
-params.discriminator = discriminator
-params.generator_optimizer = optimizer_G
-params.discriminator_optimizer = optimizer_D
-params.gradient_penalty_lambda = lambda_gp
-params.latent_dim = args.latent_dim
-params.critic = args.n_critic
-params.sample_interval = args.sample_interval
+params: Params = build_params(args)
 
 train(params)
