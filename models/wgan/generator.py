@@ -14,16 +14,14 @@ class Generator(nn.Module):
             layers.append(nn.LeakyReLU(0.2, inplace=True))
             return layers
 
-        self.model = nn.Sequential(
-            *block(latent_dim, 128, normalize=False),
-            *block(128, 256),
-            *block(256, 512),
-            *block(512, 1024),
-            nn.Linear(1024, int(np.prod(self.images_shape))),
-            nn.Tanh()
-        )
+        self.model = nn.Sequential(*block(latent_dim, 128, normalize=False),
+                                   *block(128, 256),
+                                   *block(256, 512),
+                                   *block(512, 1024),
+                                   nn.Linear(1024, int(np.prod(self.images_shape))),
+                                   nn.Tanh())
 
-    def forward(self, z):
-        img = self.model(z)
-        img = img.view(img.shape[0], *self.images_shape)
-        return img
+    def forward(self, noise):
+        image = self.model(noise)
+        image = image.view(image.shape[0], *self.images_shape)
+        return image

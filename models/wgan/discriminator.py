@@ -7,15 +7,13 @@ class Discriminator(nn.Module):
         super(Discriminator, self).__init__()
 
         images_shape = (images_channels, images_width, images_height)
-        self.model = nn.Sequential(
-            nn.Linear(int(np.prod(images_shape)), 512),
-            nn.LeakyReLU(0.2, inplace=True),
-            nn.Linear(512, 256),
-            nn.LeakyReLU(0.2, inplace=True),
-            nn.Linear(256, 1),
-        )
+        self.model = nn.Sequential(nn.Linear(int(np.prod(images_shape)), 512),
+                                   nn.LeakyReLU(0.2, inplace=True),
+                                   nn.Linear(512, 256),
+                                   nn.LeakyReLU(0.2, inplace=True),
+                                   nn.Linear(256, 1))
 
-    def forward(self, img):
-        img_flat = img.view(img.shape[0], -1)
-        validity = self.model(img_flat)
-        return validity
+    def forward(self, image):
+        image_flat = image.view(image.shape[0], -1)
+        result = self.model(image_flat)
+        return result
