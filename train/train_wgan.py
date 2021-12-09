@@ -6,9 +6,9 @@ from train.train_wgan_generator import train_generator
 def train(params: Params):
     batches_done = 0
     for epoch in range(params.epochs):
-        for batch_index, (imgs, _) in enumerate(params.dataloader):
+        for batch_index, (real_images, _) in enumerate(params.dataloader):
 
-            discriminator_loss, noise = train_discriminator(imgs, params)
+            discriminator_loss, noise = train_discriminator(real_images, params)
 
             # Train the generator every critic steps
             if batch_index % params.critic == 0:

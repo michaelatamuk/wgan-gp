@@ -11,7 +11,7 @@ from models.wgan_discriminator import Discriminator as Discriminator_WGAN
 from models.wgan_generator import Generator as Generator_WGAN
 from models.dcgan_discriminator import Discriminator as Discriminator_DCGAN
 from models.dcgan_generator import Generator as Generator_DCGAN
-from train.dcgan_init_normal import weights_init_normal
+from train.weight_init_normal import weights_init_normal
 from train.params import Params
 from utils import get_is_cuda
 

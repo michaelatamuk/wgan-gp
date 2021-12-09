@@ -1,12 +1,12 @@
 import argparse
-import os
 
 from models.type import Type
 from train.params import Params
 from train.params_builder import build_params
-from train.train_wgan import train
 
 import ssl
+
+from train.train_wgan_2 import TrainWGan
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -28,4 +28,6 @@ print(args)
 
 params: Params = build_params(args, Type.WGAN_GP)
 
-train(params)
+train: TrainWGan = TrainWGan(params)
+train.run()
+
