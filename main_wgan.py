@@ -24,7 +24,7 @@ parser.add_argument("--save_generated_image_every", type=int, default=50, help="
 args = parser.parse_args()
 print(args)
 
-params: Params = build_params(args, ModelType.WGAN_GP, DataType.CIFAR10)
+params: Params = build_params(args, ModelType.WGAN_GP, DataType.FASHION_MNIST)
 
 train: TrainWGan = TrainWGan(params)
 train.run()

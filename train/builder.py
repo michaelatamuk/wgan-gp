@@ -19,7 +19,7 @@ from train.params import Params
 
 def build_params(args: Namespace, model_type: ModelType, data_type: DataType):
     # Configure data loader
-    transforms = Compose([ToTensor(), Normalize([0.5], [0.5])])
+    transforms = Compose([Resize(32), ToTensor(), Normalize([0.5], [0.5])])
     if data_type == DataType.CIFAR10:
         os.makedirs("data/cifar10", exist_ok=True)
         dataset = datasets.CIFAR10("data/cifar10", train=True, download=True, transform=transforms)
