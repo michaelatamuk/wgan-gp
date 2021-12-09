@@ -2,7 +2,7 @@ import torch.nn as nn
 
 
 class Discriminator(nn.Module):
-    def __init__(self, img_size, channels):
+    def __init__(self, images_channels, images_width, images_height):
         super(Discriminator, self).__init__()
 
         def discriminator_block(in_filters, out_filters, bn=True):
@@ -12,14 +12,14 @@ class Discriminator(nn.Module):
             return block
 
         self.model = nn.Sequential(
-            *discriminator_block(channels, 16, bn=False),
+            *discriminator_block(images_channels, 16, bn=False),
             *discriminator_block(16, 32),
             *discriminator_block(32, 64),
             *discriminator_block(64, 128),
         )
 
         # The height and width of downsampled image
-        ds_size = img_size // 2 ** 4
+        ds_size = images_width // 2 ** 4
         self.adv_layer = nn.Sequential(nn.Linear(128 * ds_size ** 2, 1), nn.Sigmoid())
 
     def forward(self, img):

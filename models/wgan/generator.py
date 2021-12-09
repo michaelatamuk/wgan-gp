@@ -3,9 +3,9 @@ import torch.nn as nn
 
 
 class Generator(nn.Module):
-    def __init__(self, latent_dim, img_shape):
+    def __init__(self, latent_dim, images_channels, images_width, images_height):
         super(Generator, self).__init__()
-        self.img_shape = img_shape
+        self.images_shape = (images_channels, images_width, images_height)
 
         def block(in_feat, out_feat, normalize=True):
             layers = [nn.Linear(in_feat, out_feat)]
@@ -19,11 +19,11 @@ class Generator(nn.Module):
             *block(128, 256),
             *block(256, 512),
             *block(512, 1024),
-            nn.Linear(1024, int(np.prod(img_shape))),
+            nn.Linear(1024, int(np.prod(self.images_shape))),
             nn.Tanh()
         )
 
     def forward(self, z):
         img = self.model(z)
-        img = img.view(img.shape[0], *self.img_shape)
+        img = img.view(img.shape[0], *self.images_shape)
         return img

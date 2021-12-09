@@ -3,11 +3,12 @@ import numpy as np
 
 
 class Discriminator(nn.Module):
-    def __init__(self, img_shape):
+    def __init__(self, images_channels, images_width, images_height):
         super(Discriminator, self).__init__()
 
+        images_shape = (images_channels, images_width, images_height)
         self.model = nn.Sequential(
-            nn.Linear(int(np.prod(img_shape)), 512),
+            nn.Linear(int(np.prod(images_shape)), 512),
             nn.LeakyReLU(0.2, inplace=True),
             nn.Linear(512, 256),
             nn.LeakyReLU(0.2, inplace=True),

@@ -2,10 +2,10 @@ import torch.nn as nn
 
 
 class Generator(nn.Module):
-    def __init__(self, latent_dim, img_size, channels):
+    def __init__(self, latent_dim, images_channels, images_width, images_height):
         super(Generator, self).__init__()
 
-        self.init_size = img_size // 4
+        self.init_size = images_width // 4
         self.l1 = nn.Sequential(nn.Linear(latent_dim, 128 * self.init_size ** 2))
 
         self.conv_blocks = nn.Sequential(
@@ -18,7 +18,7 @@ class Generator(nn.Module):
             nn.Conv2d(128, 64, 3, stride=1, padding=1),
             nn.BatchNorm2d(64, 0.8),
             nn.LeakyReLU(0.2, inplace=True),
-            nn.Conv2d(64, channels, 3, stride=1, padding=1),
+            nn.Conv2d(64, images_channels, 3, stride=1, padding=1),
             nn.Tanh(),
         )
 
