@@ -2,7 +2,7 @@ import torch.nn as nn
 
 
 class Discriminator(nn.Module):
-    def __init__(self, images_channels, images_width, images_height):
+    def __init__(self, images_channels: int, images_width: int, images_height: int):
         super(Discriminator, self).__init__()
 
         def discriminator_block(in_filters, out_filters, bn=True):

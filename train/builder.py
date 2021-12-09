@@ -20,8 +20,6 @@ from train.params import Params
 def build_params(args: Namespace, model_type: ModelType, data_type: DataType):
     # Configure data loader
     transforms = Compose([ToTensor(), Normalize([0.5], [0.5])])
-    images_channels: int = -1
-    images_size: int = -1
     if data_type == DataType.CIFAR10:
         os.makedirs("data/cifar10", exist_ok=True)
         dataset = datasets.CIFAR10("data/cifar10", train=True, download=True, transform=transforms)
@@ -35,9 +33,9 @@ def build_params(args: Namespace, model_type: ModelType, data_type: DataType):
 
     dataiter = iter(dataloader)
     images, _ = dataiter.next()
-    images_channels = images[0].size()[0]
-    images_width = images[0].size()[1]
-    images_height = images[0].size()[2]
+    images_channels: int = images[0].size()[0]
+    images_width: int = images[0].size()[1]
+    images_height: int = images[0].size()[2]
 
     os.makedirs("images", exist_ok=True)
 
