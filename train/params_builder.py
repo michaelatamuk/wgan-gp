@@ -7,11 +7,10 @@ import torch
 from torchvision.transforms import Normalize, Resize, ToTensor, Compose
 
 from models.type import Type
-from models.wgan_discriminator import Discriminator as Discriminator_WGAN
-from models.wgan_generator import Generator as Generator_WGAN
-from models.dcgan_discriminator import Discriminator as Discriminator_DCGAN
-from models.dcgan_generator import Generator as Generator_DCGAN
-from train.weight_init_normal import weights_init_normal
+from models.wgan.discriminator import Discriminator as Discriminator_WGAN
+from models.wgan.generator import Generator as Generator_WGAN
+from models.dcgan.discriminator import Discriminator as Discriminator_DCGAN
+from models.dcgan.generator import Generator as Generator_DCGAN
 from train.params import Params
 from utils import get_is_cuda
 
@@ -28,11 +27,6 @@ def build_params(args: Namespace, network_type: Type):
     if network_type == Type.DCGAN:
         generator = Generator_DCGAN(args.latent_dim, args.img_size, args.channels)
         discriminator = Discriminator_DCGAN(args.img_size, args.channels)
-
-        # Initialize weights
-        generator.apply(weights_init_normal)
-        discriminator.apply(weights_init_normal)
-
     else:
         generator = Generator_WGAN(args.latent_dim, images_shape)
         discriminator = Discriminator_WGAN(images_shape)

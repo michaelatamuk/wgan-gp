@@ -6,7 +6,7 @@ from train.params_builder import build_params
 
 import ssl
 
-from train.train_dcgan_2 import TrainDCGan
+from train.train_dcgan import TrainDCGan
 
 ssl._create_default_https_context = ssl._create_unverified_context
 

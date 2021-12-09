@@ -1,26 +1,81 @@
+import numpy as np
+import torch
 from torch.autograd import Variable
+from torchvision.utils import save_image
 
-from train.params import Params
-from train.train_dcgan_discriminator import train_discriminator
-from train.train_dcgan_generator import train_generator
 from utils import get_tensors_type
 
+from train.params import Params
+from train.train_base import TrainBase
 
-def train(params: Params):
 
-    for epoch in range(params.epochs):
-        for batch_index, (real_images, _) in enumerate(params.dataloader):
+class TrainDCGan(TrainBase):
+    def __init__(self, params: Params):
+        super(TrainDCGan, self).__init__(params)
 
-            # Adversarial ground truths
-            valid = Variable(get_tensors_type()(real_images.shape[0], 1).fill_(1.0), requires_grad=False)
-            fake = Variable(get_tensors_type()(real_images.shape[0], 1).fill_(0.0), requires_grad=False)
+    def train_begin(self):
+        def weights_init_normal(m):
+            classname = m.__class__.__name__
 
-            batches_done = epoch * len(params.dataloader) + batch_index
-            g_loss, generated_images = train_generator(batches_done, real_images, valid, params)
+            if classname.find("Conv") != -1:
+                torch.nn.init.normal_(m.weight.data, 0.0, 0.02)
 
-            d_loss = train_discriminator(params, real_images, generated_images, valid, fake)
+            elif classname.find("BatchNorm2d") != -1:
+                torch.nn.init.normal_(m.weight.data, 1.0, 0.02)
+                torch.nn.init.constant_(m.bias.data, 0.0)
 
-            print(
-                "[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f]"
-                % (epoch+1, params.epochs, batch_index, len(params.dataloader), d_loss.item(), g_loss.item()))
+        # Initialize weights
+        self.params.generator.apply(weights_init_normal)
+        self.params.discriminator.apply(weights_init_normal)
 
+
+    def train_step(self, epoch, batch_index, real_images):
+        # Adversarial ground truths
+        valid = Variable(get_tensors_type()(real_images.shape[0], 1).fill_(1.0), requires_grad=False)
+        fake = Variable(get_tensors_type()(real_images.shape[0], 1).fill_(0.0), requires_grad=False)
+
+        self.batches_done = epoch * len(self.params.dataloader) + batch_index
+        g_loss, generated_images = self.train_generator(real_images, valid)
+
+        d_loss = self.train_discriminator(real_images, generated_images, valid, fake)
+
+        print(
+            "[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f]"
+            % (epoch + 1, self.params.epochs, batch_index, len(self.params.dataloader), d_loss.item(), g_loss.item()))
+
+    def train_generator(self, images, valid):
+        self.params.generator_optimizer.zero_grad()
+
+        # Sample noise as generator input
+        noise = Variable(get_tensors_type()(np.random.normal(0, 1, (images.shape[0], self.params.latent_dim))))
+
+        # Generate a batch of images
+        generated_images = self.params.generator(noise)
+
+        # Loss measures generator's ability to fool the discriminator
+        loss = self.params.loss_function(self.params.discriminator(generated_images), valid)
+
+        loss.backward()
+        self.params.generator_optimizer.step()
+
+        if self.batches_done % self.params.sample_interval == 0:
+            save_image(generated_images.data[:25], "images/%d.png" % self.batches_done, nrow=5, normalize=True)
+
+        return loss, generated_images
+
+    def train_discriminator(self, real_images, generated_images, valid, fake):
+        # Configure input
+        real_images_as_tensor = Variable(real_images.type(get_tensors_type()))
+
+        self.params.discriminator_optimizer.zero_grad()
+
+        # Measure discriminator's ability to classify real from generated samples
+        result_real = self.params.discriminator(real_images_as_tensor)
+        result_fake = self.params.discriminator(generated_images.detach())
+        real_loss = self.params.loss_function(result_real, valid)
+        fake_loss = self.params.loss_function(result_fake, fake)
+        loss = (real_loss + fake_loss) / 2
+
+        loss.backward()
+        self.params.discriminator_optimizer.step()
+        return loss
