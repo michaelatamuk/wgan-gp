@@ -52,7 +52,8 @@ class TrainDCGan(TrainBase):
         generated_images = self.params.generator(noise)
 
         # Loss measures generator's ability to fool the discriminator
-        loss = self.params.loss_function(self.params.discriminator(generated_images), valid)
+        generated_result = self.params.discriminator(generated_images)
+        loss = self.params.loss_function(generated_result, valid)
 
         loss.backward()
         self.params.generator_optimizer.step()
@@ -68,12 +69,14 @@ class TrainDCGan(TrainBase):
         self.params.discriminator_optimizer.zero_grad()
 
         # Measure discriminator's ability to classify real from generated samples
-        result_real = self.params.discriminator(real_images_as_tensor)
-        result_fake = self.params.discriminator(generated_images.detach())
-        real_loss = self.params.loss_function(result_real, valid)
-        fake_loss = self.params.loss_function(result_fake, fake)
-        loss = (real_loss + fake_loss) / 2
+        real_result = self.params.discriminator(real_images_as_tensor)
+        real_loss = self.params.loss_function(real_result, valid)
 
+        generated_result = self.params.discriminator(generated_images.detach())
+        generated_loss = self.params.loss_function(generated_result, fake)
+
+        loss = (real_loss + generated_loss) / 2
         loss.backward()
+
         self.params.discriminator_optimizer.step()
         return loss

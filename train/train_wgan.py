@@ -45,7 +45,8 @@ class TrainWGan(TrainBase):
         self.params.discriminator_optimizer.zero_grad()
 
         # Sample noise as generator input
-        noise = Variable(self.get_tensors_type()(np.random.normal(0, 1, (real_images.shape[0], self.params.latent_dim))))
+        noise = Variable(
+            self.get_tensors_type()(np.random.normal(0, 1, (real_images.shape[0], self.params.latent_dim))))
 
         # Generate a batch of images
         generated_images = self.params.generator(noise)

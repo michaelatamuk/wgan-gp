@@ -41,6 +41,7 @@ class TrainBase(ABC):
         print("[Epoch %d/%d] [Batch %d/%d] [Discriminator loss: %f] [Generator loss: %f]"
               % (epoch + 1, self.params.epochs, batch_index, len(self.params.dataloader),
                  discriminator_loss.item(), generator_loss.item()))
+
     @staticmethod
     def get_is_cuda():
         return True if torch.cuda.is_available() else False
