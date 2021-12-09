@@ -39,9 +39,12 @@ def build_params(args: Namespace, network_type: Type):
     if args.data == "cifar10":
         os.makedirs("data/cifar10", exist_ok=True)
         dataset = datasets.CIFAR10("data/cifar10", train=True, download=True, transform=transforms)
-    else:
+    elif args.data == "cifar10":
         os.makedirs("data/mnist", exist_ok=True)
         dataset = datasets.MNIST("data/mnist", train=True, download=True, transform=transforms)
+    else:
+        os.makedirs("data/fashion_mnist", exist_ok=True)
+        dataset = datasets.FashionMNIST("data/fashion_mnist", train=True, download=True, transform=transforms)
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=args.batch_size, shuffle=True)
 
     os.makedirs("images", exist_ok=True)
