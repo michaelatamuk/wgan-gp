@@ -1,13 +1,18 @@
+import torch.nn
+from torch.optim import Optimizer
+from torch.utils.data import DataLoader
+
+
 class Params:
     def __init__(self):
         self.epochs: int = 0
-        self.dataloader = None
-        self.generator = None
-        self.discriminator = None
-        self.generator_optimizer = None
-        self.discriminator_optimizer = None
-        self.gradient_penalty_lambda = None
-        self.loss_function = None
-        self.latent_dim = None
-        self.critic = None
-        self.sample_interval = None
+        self.dataloader: DataLoader = None
+        self.generator: torch.nn.Module = None
+        self.discriminator: torch.nn.Module = None
+        self.generator_optimizer: Optimizer = None
+        self.discriminator_optimizer: Optimizer = None
+        self.gradient_penalty_lambda: int = None
+        self.loss_function: torch.nn.Module = None
+        self.latent_dim: int = None
+        self.critic: int = None
+        self.sample_interval: int = None

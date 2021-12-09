@@ -1,6 +1,7 @@
 import os
 from argparse import Namespace
 
+from torch.optim import Optimizer
 from torch.utils.data import DataLoader
 from torchvision import datasets
 import torch
@@ -18,8 +19,7 @@ from utils import get_is_cuda
 def build_params(args: Namespace, network_type: Type):
     images_shape = (args.channels, args.img_size, args.img_size)
 
-    # Loss weight for gradient penalty
-    gradient_penalty_lambda = 10
+
 
     # Initialize generator and discriminator
     generator: torch.nn.Module = None
@@ -55,17 +55,18 @@ def build_params(args: Namespace, network_type: Type):
     os.makedirs("images", exist_ok=True)
 
     # Optimizers
-    optimizer_G = torch.optim.Adam(generator.parameters(), lr=args.lr, betas=(args.b1, args.b2))
-    optimizer_D = torch.optim.Adam(discriminator.parameters(), lr=args.lr, betas=(args.b1, args.b2))
+    generator_optimizer: Optimizer = torch.optim.Adam(generator.parameters(), lr=args.lr, betas=(args.b1, args.b2))
+    discriminator_optimizer: Optimizer = torch.optim.Adam(discriminator.parameters(), lr=args.lr, betas=(args.b1, args.b2))
 
     params: Params = Params()
     params.epochs = args.n_epochs
     params.dataloader = dataloader
     params.generator = generator
     params.discriminator = discriminator
-    params.generator_optimizer = optimizer_G
-    params.discriminator_optimizer = optimizer_D
-    params.gradient_penalty_lambda = gradient_penalty_lambda
+    params.generator_optimizer = generator_optimizer
+    params.discriminator_optimizer = discriminator_optimizer
+    if "gradient_penalty_lambda" in args:
+        params.gradient_penalty_lambda = args.gradient_penalty_lambda
     params.loss_function = loss_function
     params.latent_dim = args.latent_dim
     if "n_critic" in args:

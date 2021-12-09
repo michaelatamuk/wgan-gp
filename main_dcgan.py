@@ -2,7 +2,7 @@ import argparse
 
 from models.type import Type
 from train.params import Params
-from train.params_builder import build_params
+from train.builder import build_params
 
 import ssl
 
