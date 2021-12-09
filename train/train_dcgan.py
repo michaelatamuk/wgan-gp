@@ -28,20 +28,17 @@ class TrainDCGan(TrainBase):
         self.params.generator.apply(weights_init_normal)
         self.params.discriminator.apply(weights_init_normal)
 
-
     def train_step(self, epoch, batch_index, real_images):
         # Adversarial ground truths
         valid = Variable(get_tensors_type()(real_images.shape[0], 1).fill_(1.0), requires_grad=False)
         fake = Variable(get_tensors_type()(real_images.shape[0], 1).fill_(0.0), requires_grad=False)
 
         self.batches_done = epoch * len(self.params.dataloader) + batch_index
-        g_loss, generated_images = self.train_generator(real_images, valid)
+        generator_loss, generated_images = self.train_generator(real_images, valid)
 
-        d_loss = self.train_discriminator(real_images, generated_images, valid, fake)
+        discriminator_loss = self.train_discriminator(real_images, generated_images, valid, fake)
 
-        print(
-            "[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f]"
-            % (epoch + 1, self.params.epochs, batch_index, len(self.params.dataloader), d_loss.item(), g_loss.item()))
+        self.print_results(epoch, batch_index, discriminator_loss, generator_loss)
 
     def train_generator(self, images, valid):
         self.params.generator_optimizer.zero_grad()
@@ -58,8 +55,7 @@ class TrainDCGan(TrainBase):
         loss.backward()
         self.params.generator_optimizer.step()
 
-        if self.batches_done % self.params.sample_interval == 0:
-            save_image(generated_images.data[:25], "images/%d.png" % self.batches_done, nrow=5, normalize=True)
+        self.save_generated_image(generated_images)
 
         return loss, generated_images
 

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 import torch
+from torchvision.utils import save_image
 
 from train.params import Params
 
@@ -22,6 +23,14 @@ class TrainBase(ABC):
     def train_step(self, epoch, batch_index, real_images):
         pass
 
+    def save_generated_image(self, generated_images):
+        if self.batches_done % self.params.sample_interval == 0:
+            save_image(generated_images.data[:25], "images/%d.png" % self.batches_done, nrow=5, normalize=True)
+
+    def print_results(self, epoch, batch_index, discriminator_loss, generator_loss):
+        print("[Epoch %d/%d] [Batch %d/%d] [Discriminator loss: %f] [Generator loss: %f]"
+              % (epoch + 1, self.params.epochs, batch_index, len(self.params.dataloader),
+                 discriminator_loss.item(), generator_loss.item()))
     @staticmethod
     def get_is_cuda():
         return True if torch.cuda.is_available() else False

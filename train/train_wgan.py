@@ -20,23 +20,20 @@ class TrainWGan(TrainBase):
             generator_loss = self.train_generator(noise)
             self.batches_done += self.params.critic
 
-            print("[Epoch %d/%d] [Batch %d/%d] [Discriminator loss: %f] [Generator loss: %f]"
-                  % (epoch + 1, self.params.epochs, batch_index, len(self.params.dataloader),
-                     discriminator_loss.item(), generator_loss.item()))
+            self.print_results(epoch, batch_index, discriminator_loss, generator_loss)
 
     def train_generator(self, noise):
         # Generate a batch of images
-        fake_images = self.params.generator(noise)
+        generated_images = self.params.generator(noise)
 
         # Loss measures generator's ability to fool the discriminator
         # Train on fake images
-        fake_validity = self.params.discriminator(fake_images)
+        fake_validity = self.params.discriminator(generated_images)
         loss = -torch.mean(fake_validity)
         loss.backward()
         self.params.generator_optimizer.step()
 
-        if self.batches_done % self.params.sample_interval == 0:
-            save_image(fake_images.data[:25], "images/%d.png" % self.batches_done, nrow=5, normalize=True)
+        self.save_generated_image(generated_images)
 
         return loss
 
