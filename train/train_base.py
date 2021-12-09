@@ -28,10 +28,10 @@ class TrainBase(ABC):
     def train_step(self, epoch, batch_index, real_images):
         pass
 
-    def save_generated_image(self, generated_images):
+    def save_generated_images(self, generated_images):
         if self.batches_done % self.params.save_generated_image_every == 0:
             image_path = "images/" + self.get_train_name() + "_%d.png" % self.batches_done
-            save_image(generated_images.data[:25], image_path, nrow=5, normalize=True)
+            save_image(generated_images.data, image_path, nrow=8, normalize=True)
 
     @abstractmethod
     def get_train_name(self):

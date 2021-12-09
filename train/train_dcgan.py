@@ -58,7 +58,7 @@ class TrainDCGan(TrainBase):
         loss.backward()
         self.params.generator_optimizer.step()
 
-        self.save_generated_image(generated_images)
+        self.save_generated_images(generated_images)
 
         return loss, generated_images
 
