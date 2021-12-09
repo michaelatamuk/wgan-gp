@@ -54,10 +54,11 @@ def build_params(args: Namespace, model_type: ModelType, data_type: DataType):
     if model_type == ModelType.DCGAN:
         loss_function = torch.nn.BCELoss()
 
-
     # Create Optimizers
-    generator_optimizer: Optimizer = torch.optim.Adam(generator.parameters(), lr=args.lr, betas=(args.b1, args.b2))
-    discriminator_optimizer: Optimizer = torch.optim.Adam(discriminator.parameters(), lr=args.lr, betas=(args.b1, args.b2))
+    generator_optimizer: Optimizer = torch.optim.Adam(generator.parameters(), lr=args.lr,
+                                                      betas=(args.b1, args.b2))
+    discriminator_optimizer: Optimizer = torch.optim.Adam(discriminator.parameters(), lr=args.lr,
+                                                          betas=(args.b1, args.b2))
 
     # Fill Train Params
     params: Params = Params()
