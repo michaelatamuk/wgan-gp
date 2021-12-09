@@ -1,8 +1,10 @@
 import torch
 from torchvision.utils import save_image
 
+from train.params import Params
 
-def train_generator(batches_done, params, noise):
+
+def train_generator(batches_done, params: Params, noise):
     # Generate a batch of images
     fake_images = params.generator(noise)
 
@@ -15,7 +17,5 @@ def train_generator(batches_done, params, noise):
 
     if batches_done % params.sample_interval == 0:
         save_image(fake_images.data[:25], "images/%d.png" % batches_done, nrow=5, normalize=True)
-
-    batches_done += params.critic
 
     return loss

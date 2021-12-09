@@ -1,6 +1,6 @@
 from train.params import Params
-from train.train_discriminator import train_discriminator
-from train.train_generator import train_generator
+from train.train_wgan_discriminator import train_discriminator
+from train.train_wgan_generator import train_generator
 
 
 def train(params: Params):
@@ -13,6 +13,7 @@ def train(params: Params):
             # Train the generator every critic steps
             if batch_index % params.critic == 0:
                 generator_loss = train_generator(batches_done, params, noise)
+                batches_done += params.critic
 
                 print("[Epoch %d/%d] [Batch %d/%d] [Discriminator loss: %f] [Generator loss: %f]"
                       % (epoch+1, params.epochs, batch_index, len(params.dataloader),

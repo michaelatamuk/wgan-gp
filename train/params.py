@@ -7,6 +7,7 @@ class Params:
         self.generator_optimizer = None
         self.discriminator_optimizer = None
         self.gradient_penalty_lambda = None
+        self.loss_function = None
         self.latent_dim = None
         self.critic = None
         self.sample_interval = None

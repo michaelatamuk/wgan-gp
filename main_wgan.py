@@ -1,9 +1,10 @@
 import argparse
 import os
 
+from models.type import Type
 from train.params import Params
 from train.params_builder import build_params
-from train.train import train
+from train.train_wgan import train
 
 import ssl
 
@@ -17,14 +18,14 @@ parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first 
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--n_cpu", type=int, default=8, help="number of cpu threads to use during batch generation")
 parser.add_argument("--latent_dim", type=int, default=100, help="dimensionality of the latent space")
+parser.add_argument("--data", type=str, default='cifar10', help="data to train")
 parser.add_argument("--img_size", type=int, default=28, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
 parser.add_argument("--n_critic", type=int, default=5, help="number of training steps for discriminator per iter")
-parser.add_argument("--clip_value", type=float, default=0.01, help="lower and upper clip value for disc. weights")
-parser.add_argument("--sample_interval", type=int, default=400, help="interval betwen image samples")
+parser.add_argument("--sample_interval", type=int, default=50, help="interval betwen image samples")
 args = parser.parse_args()
 print(args)
 
-params: Params = build_params(args)
+params: Params = build_params(args, Type.WGAN_GP)
 
 train(params)
