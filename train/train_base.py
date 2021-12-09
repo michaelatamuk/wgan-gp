@@ -25,7 +25,12 @@ class TrainBase(ABC):
 
     def save_generated_image(self, generated_images):
         if self.batches_done % self.params.sample_interval == 0:
-            save_image(generated_images.data[:25], "images/%d.png" % self.batches_done, nrow=5, normalize=True)
+            image_path = "images/" + self.get_train_name() + "_%d.png" % self.batches_done
+            save_image(generated_images.data[:25], image_path, nrow=5, normalize=True)
+
+    @abstractmethod
+    def get_train_name(self):
+        pass
 
     def print_results(self, epoch, batch_index, discriminator_loss, generator_loss):
         print("[Epoch %d/%d] [Batch %d/%d] [Discriminator loss: %f] [Generator loss: %f]"

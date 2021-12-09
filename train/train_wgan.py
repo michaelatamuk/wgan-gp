@@ -12,6 +12,9 @@ class TrainWGan(TrainBase):
     def __init__(self, params: Params):
         super(TrainWGan, self).__init__(params)
 
+    def get_train_name(self):
+        return "wgan"
+
     def train_step(self, epoch, batch_index, real_images):
         discriminator_loss, noise = self.train_discriminator(real_images)
 

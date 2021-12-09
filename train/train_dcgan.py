@@ -13,6 +13,9 @@ class TrainDCGan(TrainBase):
     def __init__(self, params: Params):
         super(TrainDCGan, self).__init__(params)
 
+    def get_train_name(self):
+        return "dcgan"
+
     def train_begin(self):
         def weights_init_normal(m):
             classname = m.__class__.__name__
