@@ -21,7 +21,7 @@ parser.add_argument("--latent_dim", type=int, default=100, help="dimensionality 
 parser.add_argument("--data", type=str, default='mnist', help="data to train")
 parser.add_argument("--img_size", type=int, default=32, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=1, help="number of image channels")
-parser.add_argument("--sample_interval", type=int, default=50, help="interval betwen image samples")
+parser.add_argument("--save_generated_image_every", type=int, default=50, help="interval batches between saving image")
 args = parser.parse_args()
 print(args)
 

@@ -1,9 +1,6 @@
 import numpy as np
 import torch
 from torch.autograd import Variable
-from torchvision.utils import save_image
-
-from utils import get_tensors_type
 
 from train.params import Params
 from train.train_base import TrainBase
@@ -17,6 +14,8 @@ class TrainDCGan(TrainBase):
         return "dcgan"
 
     def train_begin(self):
+        super(TrainDCGan, self).train_begin()
+
         def weights_init_normal(m):
             classname = m.__class__.__name__
 
@@ -32,9 +31,9 @@ class TrainDCGan(TrainBase):
         self.params.discriminator.apply(weights_init_normal)
 
     def train_step(self, epoch, batch_index, real_images):
-        # Adversarial ground truths
-        valid = Variable(get_tensors_type()(real_images.shape[0], 1).fill_(1.0), requires_grad=False)
-        fake = Variable(get_tensors_type()(real_images.shape[0], 1).fill_(0.0), requires_grad=False)
+        # Ground truths
+        valid = Variable(self.get_tensors_type()(real_images.shape[0], 1).fill_(1.0), requires_grad=False)
+        fake = Variable(self.get_tensors_type()(real_images.shape[0], 1).fill_(0.0), requires_grad=False)
 
         self.batches_done = epoch * len(self.params.dataloader) + batch_index
         generator_loss, generated_images = self.train_generator(real_images, valid)
@@ -47,7 +46,7 @@ class TrainDCGan(TrainBase):
         self.params.generator_optimizer.zero_grad()
 
         # Sample noise as generator input
-        noise = Variable(get_tensors_type()(np.random.normal(0, 1, (images.shape[0], self.params.latent_dim))))
+        noise = Variable(self.get_tensors_type()(np.random.normal(0, 1, (images.shape[0], self.params.latent_dim))))
 
         # Generate a batch of images
         generated_images = self.params.generator(noise)
@@ -64,7 +63,7 @@ class TrainDCGan(TrainBase):
 
     def train_discriminator(self, real_images, generated_images, valid, fake):
         # Configure input
-        real_images_as_tensor = Variable(real_images.type(get_tensors_type()))
+        real_images_as_tensor = Variable(real_images.type(self.get_tensors_type()))
 
         self.params.discriminator_optimizer.zero_grad()
 

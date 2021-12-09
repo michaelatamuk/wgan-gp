@@ -13,15 +13,12 @@ from models.wgan.generator import Generator as Generator_WGAN
 from models.dcgan.discriminator import Discriminator as Discriminator_DCGAN
 from models.dcgan.generator import Generator as Generator_DCGAN
 from train.params import Params
-from utils import get_is_cuda
 
 
 def build_params(args: Namespace, network_type: Type):
     images_shape = (args.channels, args.img_size, args.img_size)
 
-
-
-    # Initialize generator and discriminator
+    # Create generator and discriminator
     generator: torch.nn.Module = None
     discriminator: torch.nn.Module = None
     if network_type == Type.DCGAN:
@@ -31,15 +28,10 @@ def build_params(args: Namespace, network_type: Type):
         generator = Generator_WGAN(args.latent_dim, images_shape)
         discriminator = Discriminator_WGAN(images_shape)
 
+    # Create Loss Function
     loss_function: torch.nn.Module = None
     if network_type == Type.DCGAN:
         loss_function = torch.nn.BCELoss()
-
-    if get_is_cuda():
-        generator.cuda()
-        discriminator.cuda()
-        if loss_function is not None:
-            loss_function.cuda()
 
     # Configure data loader
     transforms = Compose([Resize(args.img_size), ToTensor(), Normalize([0.5], [0.5])])
@@ -54,10 +46,11 @@ def build_params(args: Namespace, network_type: Type):
 
     os.makedirs("images", exist_ok=True)
 
-    # Optimizers
+    # Create Optimizers
     generator_optimizer: Optimizer = torch.optim.Adam(generator.parameters(), lr=args.lr, betas=(args.b1, args.b2))
     discriminator_optimizer: Optimizer = torch.optim.Adam(discriminator.parameters(), lr=args.lr, betas=(args.b1, args.b2))
 
+    # Fill Train Params
     params: Params = Params()
     params.epochs = args.n_epochs
     params.dataloader = dataloader
@@ -71,6 +64,6 @@ def build_params(args: Namespace, network_type: Type):
     params.latent_dim = args.latent_dim
     if "n_critic" in args:
         params.critic = args.n_critic
-    params.sample_interval = args.sample_interval
+    params.save_generated_image_every = args.save_generated_image_every
 
     return params

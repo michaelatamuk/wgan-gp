@@ -15,4 +15,4 @@ class Params:
         self.loss_function: torch.nn.Module = None
         self.latent_dim: int = None
         self.critic: int = None
-        self.sample_interval: int = None
+        self.save_generated_image_every: int = None

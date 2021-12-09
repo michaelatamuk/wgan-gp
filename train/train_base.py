@@ -12,19 +12,24 @@ class TrainBase(ABC):
         self.batches_done = 0
 
     def run(self):
+        self.train_begin()
         for epoch in range(self.params.epochs):
             for batch_index, (real_images, _) in enumerate(self.params.dataloader):
                 self.train_step(epoch, batch_index, real_images)
 
     def train_begin(self):
-        pass
+        if self.get_is_cuda():
+            self.params.generator.cuda()
+            self.params.discriminator.cuda()
+            if self.params.loss_function is not None:
+                self.params.loss_function.cuda()
 
     @abstractmethod
     def train_step(self, epoch, batch_index, real_images):
         pass
 
     def save_generated_image(self, generated_images):
-        if self.batches_done % self.params.sample_interval == 0:
+        if self.batches_done % self.params.save_generated_image_every == 0:
             image_path = "images/" + self.get_train_name() + "_%d.png" % self.batches_done
             save_image(generated_images.data[:25], image_path, nrow=5, normalize=True)
 

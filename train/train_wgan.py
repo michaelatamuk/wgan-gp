@@ -2,7 +2,6 @@ import numpy as np
 import torch
 from torch import autograd
 from torch.autograd import Variable
-from torchvision.utils import save_image
 
 from train.params import Params
 from train.train_base import TrainBase
@@ -29,11 +28,13 @@ class TrainWGan(TrainBase):
         # Generate a batch of images
         generated_images = self.params.generator(noise)
 
+        # Train on generated images
+        generated_result = self.params.discriminator(generated_images)
+
         # Loss measures generator's ability to fool the discriminator
-        # Train on fake images
-        fake_validity = self.params.discriminator(generated_images)
-        loss = -torch.mean(fake_validity)
+        loss = -torch.mean(generated_result)
         loss.backward()
+
         self.params.generator_optimizer.step()
 
         self.save_generated_image(generated_images)
@@ -47,25 +48,26 @@ class TrainWGan(TrainBase):
         noise = Variable(self.get_tensors_type()(np.random.normal(0, 1, (real_images.shape[0], self.params.latent_dim))))
 
         # Generate a batch of images
-        fake_images = self.params.generator(noise)
+        generated_images = self.params.generator(noise)
 
         # Real images
         tensor_type = self.get_tensors_type()
         real_images_type = real_images.type(tensor_type)
         real_images_as_tensor = Variable(real_images_type)
-        real_validity = self.params.discriminator(real_images_as_tensor)
+        real_result = self.params.discriminator(real_images_as_tensor)
 
-        # Fake images
-        fake_validity = self.params.discriminator(fake_images)
+        generated_result = self.params.discriminator(generated_images)
 
         # Gradient penalty
-        gradient_penalty = self.compute_gradient_penalty(self.params.discriminator, real_images.data, fake_images.data)
+        gradient_penalty = self.compute_gradient_penalty(self.params.discriminator, real_images.data,
+                                                         generated_images.data)
 
-        # Adversarial loss
-        loss = -torch.mean(real_validity) + torch.mean(
-            fake_validity) + self.params.gradient_penalty_lambda * gradient_penalty
+        loss = -torch.mean(real_result) + torch.mean(generated_result) + \
+               self.params.gradient_penalty_lambda * gradient_penalty
         loss.backward()
+
         self.params.discriminator_optimizer.step()
+
         self.params.generator_optimizer.zero_grad()
         return loss, noise
 
