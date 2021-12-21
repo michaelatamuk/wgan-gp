@@ -11,3 +11,7 @@ data/cifar10/*
 data/mnist/*
 data/fashion_mnist/*
 images/*
+results/wgan.pt
+results/wgan_state_dict.pt
+results/dcgan.pt
+results/dcgan_state_dict.pt

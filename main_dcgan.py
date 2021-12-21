@@ -1,7 +1,6 @@
-import argparse
-
 from models.type import Type as ModelType
 from data.type import Type as DataType
+from results.results import Results
 from train.params import Params
 from train.builder import build_params
 
@@ -11,19 +10,18 @@ from train.train_dcgan import TrainDCGan
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--epochs", type=int, default=200, help="number of epochs of training")
-parser.add_argument("--batch_size", type=int, default=64, help="size of the batches")
-parser.add_argument("--lr", type=float, default=0.0002, help="adam: learning rate")
-parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
-parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
-parser.add_argument("--latent_dim", type=int, default=100, help="dimensionality of the latent space")
-parser.add_argument("--save_generated_image_every", type=int, default=50, help="interval batches between saving image")
-args = parser.parse_args()
-print(args)
+args: {} = {}
+args["epochs"] = 200 # number of epochs of training
+args["batch_size"] = 64 # size of the batches
+args["lr"] = 0.0002 # adam: learning rate
+args["b1"] = 0.5 # adam: decay of first order momentum of gradient
+args["b2"] = 0.999 # adam: decay of first order momentum of gradient
+args["latent_dim"] = 100 # dimensionality of the latent space
+args["save_generated_image_every"] = 50 # interval batches between saving image
 
 params: Params = build_params(args, ModelType.DCGAN, DataType.MNIST)
 
-train = TrainDCGan(params)
-train.run()
+results: Results = Results("dcgan")
 
+train = TrainDCGan(params, results.loss_updated_callback)
+train.run()

@@ -1,3 +1,5 @@
+from collections import Callable
+
 import numpy as np
 import torch
 from torch import autograd
@@ -8,8 +10,8 @@ from train.train_base import TrainBase
 
 
 class TrainWGan(TrainBase):
-    def __init__(self, params: Params):
-        super(TrainWGan, self).__init__(params)
+    def __init__(self, params: Params, loss_updated_callback: Callable = None):
+        super(TrainWGan, self).__init__(params, loss_updated_callback)
 
     def get_train_name(self):
         return "wgan"
@@ -23,6 +25,7 @@ class TrainWGan(TrainBase):
             self.batches_done += self.params.critic
 
             self.print_results(epoch, batch_index, discriminator_loss, generator_loss)
+            self.call_loss_updated_callback(epoch, batch_index, discriminator_loss, generator_loss)
 
     def train_generator(self, noise):
         # Generate a batch of images
