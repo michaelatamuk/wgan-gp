@@ -19,7 +19,6 @@ class TrainBase(ABC):
         for epoch in range(self.params.epochs):
             for batch_index, (real_images, _) in enumerate(self.params.dataloader):
                 self.train_step(epoch, batch_index, real_images)
-                return
 
     def train_begin(self):
         if self.get_is_cuda():
