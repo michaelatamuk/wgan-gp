@@ -22,9 +22,3 @@ class Results:
 
         self.generator_losses[step_num] = generator_loss
         self.discriminator_losses[step_num] = discriminator_loss
-
-        if len(self.generator_losses) % 50 == 0:
-            print("Generator Losses: " + str(list(self.generator_losses)[-50:]))
-
-        if len(self.discriminator_losses) % 50 == 0:
-            print("Discriminator Losses: " + str(list(self.discriminator_losses)[-50:]))

@@ -75,5 +75,6 @@ def build_params(args: {}, model_type: ModelType, data_type: DataType):
     if "critic" in args:
         params.critic = args["critic"]
     params.save_generated_image_every = args["save_generated_image_every"]
+    params.data_name = data_type.value
 
     return params

@@ -15,7 +15,7 @@ from train.train_wgan import TrainWGan
 ssl._create_default_https_context = ssl._create_unverified_context
 
 args: {} = {}
-args["epochs"] = 200 # number of epochs of training
+args["epochs"] = 2 # number of epochs of training
 args["batch_size"] = 64 # size of the batches
 args["lr"] = 0.0002 # adam: learning rate
 args["b1"] = 0.5 # adam: decay of first order momentum of gradient
@@ -41,7 +41,7 @@ if torch.cuda.is_available():
     fixed_noise = fixed_noise.cuda()
 
 generated_image = last_generator(fixed_noise)
-image_path_1 = "images/result_wgan_1.png"
-image_path_2 = "images/result_wgan_2.png"
+image_path_1 = "results/wgan_1.png"
+image_path_2 = "results/wgan_2.png"
 save_image(generated_image.data[0], image_path_1, nrow=2, normalize=True)
 save_image(generated_image.data[1], image_path_2, nrow=2, normalize=True)

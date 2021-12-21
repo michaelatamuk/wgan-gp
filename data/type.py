@@ -1,9 +1,7 @@
 from enum import Enum
 
-import torch.nn as nn
-
 
 class Type(Enum):
-    CIFAR10 = 1
-    MNIST = 2
-    FASHION_MNIST = 3
+    CIFAR10 = "cifar10"
+    MNIST = "mnist"
+    FASHION_MNIST = "fashion_mnist"

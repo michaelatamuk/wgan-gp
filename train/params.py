@@ -16,3 +16,4 @@ class Params:
         self.latent_dim: int = None
         self.critic: int = None
         self.save_generated_image_every: int = None
+        self.data_name: str = None
