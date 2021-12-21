@@ -1,3 +1,7 @@
+import torch
+from torch import Tensor
+from torchvision.utils import save_image
+
 from models.type import Type as ModelType
 from data.type import Type as DataType
 from results.results import Results
@@ -25,3 +29,17 @@ results: Results = Results("dcgan")
 
 train = TrainDCGan(params, results.loss_updated_callback)
 train.run()
+
+generator_losses: {} = results.generator_losses
+discriminator_losses: {} = results.discriminator_losses
+last_generator: torch.nn.Module = results.last_generator
+
+fixed_noise: Tensor = torch.randn(2, 100)
+if torch.cuda.is_available():
+    fixed_noise = fixed_noise.cuda()
+
+generated_image = last_generator(fixed_noise)
+image_path_1 = "images/result_dcgan_1.png"
+image_path_2 = "images/result_dcgan_2.png"
+save_image(generated_image.data[0], image_path_1, nrow=2, normalize=True)
+save_image(generated_image.data[1], image_path_2, nrow=2, normalize=True)
