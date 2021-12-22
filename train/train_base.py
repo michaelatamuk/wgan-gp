@@ -1,3 +1,4 @@
+import os
 from abc import ABC, abstractmethod
 from collections import Callable
 
@@ -13,6 +14,7 @@ class TrainBase(ABC):
         self.params = params
         self.batches_done = 0
         self.loss_updated_callback: Callable = loss_updated_callback
+        self.images_path = "images/" + self.get_train_name() + "/" + self.params.data_name
 
     def run(self):
         self.train_begin()
@@ -27,13 +29,17 @@ class TrainBase(ABC):
             if self.params.loss_function is not None:
                 self.params.loss_function.cuda()
 
+        isExist = os.path.exists(self.images_path)
+        if not isExist:
+            os.makedirs(self.images_path)
+
     @abstractmethod
     def train_step(self, epoch, batch_index, real_images):
         pass
 
     def save_generated_images(self, generated_images):
         if self.batches_done % self.params.save_generated_image_every == 0:
-            image_path = "images/" + self.get_train_name() + "_" + self.params.data_name + "_%d.png" % self.batches_done
+            image_path = self.images_path + "/%d.png" % self.batches_done
             save_image(generated_images.data, image_path, nrow=8, normalize=True)
 
     @abstractmethod
